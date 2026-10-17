@@ -63,8 +63,8 @@ class ImmutabilityAndReversalTest extends TestCase
         $this->assertSame($journal->id, $reversal->reversal_of_id);
         $this->assertTrue($journal->isReversed());
         $this->assertTrue($reversal->isReversal());
-        $this->assertAmount('0.000000', Ledger::balance('2100', $this->seller()));
-        $this->assertAmount('0.000000', Ledger::balance('4000'));
+        $this->assertAmount('0.000000000000', Ledger::balance('2100', $this->seller()));
+        $this->assertAmount('0.000000000000', Ledger::balance('4000'));
         $this->assertSame(
             $journal->entries->pluck('debit')->all(),
             $reversal->entries->pluck('credit')->all(),

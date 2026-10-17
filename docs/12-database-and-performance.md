@@ -12,7 +12,14 @@
 | `ledger_sequences` | One per numbering window | Gapless numbering |
 | `ledger_reconciliation_issues` | Differences found | Reconcilers |
 
-Money columns are `DECIMAL(24,6)`: 18 integer digits, 6 decimals.
+Every money column (`debit`, `credit`, `debit_total`, `credit_total`, the reconciliation
+amounts and `exchange_rate`) is `DECIMAL(30,12)`: 18 integer digits, 12 decimals.
+Arithmetic in PHP uses the same scale (`Amount::SCALE = 12`).
+
+**SQLite** has no true decimal type. It stores these values as 64-bit floats, which hold
+about 15–16 significant digits, so on SQLite all 12 decimals are exact only while
+the integer part is small (up to about 4 digits). MySQL, MariaDB and PostgreSQL store
+the full `DECIMAL(30,12)` exactly. Use SQLite for tests only.
 
 ## What one posting does
 

@@ -37,7 +37,7 @@ Facades/Ledger ──▶ LedgerManager (entry point, scoped singleton)
                      ├─ IntegrityChecker (verify), ReconciliationService (reconcile)
                      └─ AccountService (chart: cache, seed, create/update/delete rules, tree, roles)
 Models/       Account, Journal*, Entry*, Balance, Period, Sequence, ReconciliationIssue   (* Immutable)
-Support/      Amount (BigDecimal, scale 6), Ref (morph type+id), Expectation, Events, Table
+Support/      Amount (BigDecimal, scale 12), Ref (morph type+id), Expectation, Events, Table
 Concerns/     HasLedger trait for host models
 Console/      ledger:install|seed-chart|trial-balance|verify|reconcile|close-period|reopen-period|rebuild-balances
 Http/         optional JSON API (routes/api.php), gated by viewLedger / manageLedger
@@ -72,12 +72,12 @@ database/migrations/  tables + optional immutability triggers (MySQL, PostgreSQL
   dispatch synchronous side effects mid-posting. Events implement
   `ShouldDispatchAfterCommit` and go through `Support\Events::dispatch()` (lazy dispatcher,
   so `Event::fake()` works).
-- Money is `Brick\Math\BigDecimal` at scale 6 (`Amount::of`). No float arithmetic anywhere;
+- Money is `Brick\Math\BigDecimal` at scale 12 (`Amount::of`), stored as `DECIMAL(30,12)` in every money column (including `exchange_rate`). Changing the scale means changing `Amount::SCALE`, the migration, the model `decimal:12` casts and the integrity tolerance together. No float arithmetic anywhere;
   SQL `SUM()` results are wrapped in `Amount::of()`, because SQLite returns floats.
 - Account arguments: a string is a **code**, an int is an **id**. Keep that contract.
 - Closing journals (`origin = closing`) are excluded from the income statement and included
   everywhere else.
-- Report classes are read-only and serialise amounts as 6-decimal strings.
+- Report classes are read-only and serialise amounts as 12-decimal strings.
 
 ## Conventions
 

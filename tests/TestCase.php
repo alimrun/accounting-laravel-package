@@ -37,7 +37,7 @@ abstract class TestCase extends Orchestra
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('wallet_balance', 24, 6)->default(0);
+            $table->decimal('wallet_balance', 30, 12)->default(0);
         });
 
         Ledger::accounts()->flush();

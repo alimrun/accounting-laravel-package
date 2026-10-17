@@ -46,8 +46,8 @@ class Entry extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'debit' => 'decimal:6',
-        'credit' => 'decimal:6',
+        'debit' => 'decimal:12',
+        'credit' => 'decimal:12',
         'dimensions' => 'array',
         'occurred_at' => 'datetime',
         'origin' => JournalOrigin::class,

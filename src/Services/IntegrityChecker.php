@@ -27,7 +27,7 @@ class IntegrityChecker
         foreach ((clone $entries)
             ->selectRaw('journal_id, SUM(debit) as debit, SUM(credit) as credit')
             ->groupBy('journal_id')
-            ->havingRaw('ABS(SUM(debit) - SUM(credit)) > 0.0000005')
+            ->havingRaw('ABS(SUM(debit) - SUM(credit)) > 0.0000000000005')
             ->limit(100)
             ->get() as $row) {
             $problems[] = sprintf('Journal #%d does not balance: debits %s, credits %s.', $row->journal_id, Amount::of($row->debit), Amount::of($row->credit));

@@ -54,7 +54,7 @@ class IntegrityAndReconciliationTest extends TestCase
 
         $this->assertSame(['customer-wallet' => ['checked' => 1, 'differences' => 1]], $summary);
         $issue = ReconciliationIssue::query()->unresolved()->sole();
-        $this->assertAmount('20.000000', $issue->difference);
+        $this->assertAmount('20.000000000000', $issue->difference);
 
         // A second run updates the same issue instead of adding one.
         Ledger::reconcile([WalletReconciler::class]);

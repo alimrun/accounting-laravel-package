@@ -21,7 +21,7 @@ class ReportsAndBalancesTest extends TestCase
         $tb = Ledger::trialBalance();
 
         $this->assertTrue($tb->isBalanced());
-        $this->assertAmount('444.000000', $tb->totalDebit);
+        $this->assertAmount('444.000000000000', $tb->totalDebit);
         $this->assertSame(['2050', '2100', '4000', '5000'], array_column($tb->rows, 'code'));
     }
 
@@ -37,7 +37,7 @@ class ReportsAndBalancesTest extends TestCase
             ->post();
 
         // withdrawable = credit balance of 2100 - debit balance of 1100
-        $this->assertAmount('200.000000', Ledger::balance(['2100', '1100'], $this->seller(), side: NormalSide::Credit));
+        $this->assertAmount('200.000000000000', Ledger::balance(['2100', '1100'], $this->seller(), side: NormalSide::Credit));
     }
 
     public function test_balance_as_of_a_date_reads_entries(): void
@@ -47,9 +47,9 @@ class ReportsAndBalancesTest extends TestCase
         Ledger::journal('wallet.topup')->key('t:2')->occurredAt('2026-02-10')
             ->debit('1010', 40)->credit('2000', 40, party: $this->customer())->post();
 
-        $this->assertAmount('100.000000', Ledger::balance('2000', $this->customer(), '2026-01-31'));
-        $this->assertAmount('140.000000', Ledger::balance('2000', $this->customer()));
-        $this->assertAmount('140.000000', Ledger::balance('1010', asOf: '2026-12-31'));
+        $this->assertAmount('100.000000000000', Ledger::balance('2000', $this->customer(), '2026-01-31'));
+        $this->assertAmount('140.000000000000', Ledger::balance('2000', $this->customer()));
+        $this->assertAmount('140.000000000000', Ledger::balance('1010', asOf: '2026-12-31'));
     }
 
     public function test_customer_statement_has_running_balances(): void
@@ -63,9 +63,9 @@ class ReportsAndBalancesTest extends TestCase
 
         $statement = Ledger::statement('2000', $this->customer(), from: '2026-02-01');
 
-        $this->assertAmount('100.000000', $statement->opening);
-        $this->assertSame(['70.000000', '80.000000'], array_column($statement->lines, 'balance'));
-        $this->assertAmount('80.000000', $statement->closing);
+        $this->assertAmount('100.000000000000', $statement->opening);
+        $this->assertSame(['70.000000000000', '80.000000000000'], array_column($statement->lines, 'balance'));
+        $this->assertAmount('80.000000000000', $statement->closing);
         $this->assertNotNull($statement->lines[0]['journal_number']);
     }
 
@@ -80,7 +80,7 @@ class ReportsAndBalancesTest extends TestCase
         $report = Ledger::partyBalances('2000');
 
         $this->assertSame(['2', '1', '3'], array_column($report->rows, 'party_id'));
-        $this->assertAmount('101.000000', $report->total);
+        $this->assertAmount('101.000000000000', $report->total);
     }
 
     public function test_has_ledger_trait_reads_a_models_balance_and_statement(): void
@@ -90,7 +90,7 @@ class ReportsAndBalancesTest extends TestCase
         Ledger::journal('wallet.topup')->key('t:1')
             ->debit('1010', 25)->credit('2000', 25, party: $customer)->post();
 
-        $this->assertAmount('25.000000', $customer->ledgerBalance('2000'));
+        $this->assertAmount('25.000000000000', $customer->ledgerBalance('2000'));
         $this->assertSame(1, $customer->ledgerEntries()->count());
         $this->assertCount(1, $customer->ledgerStatement('2000')->lines);
     }
@@ -116,7 +116,7 @@ class ReportsAndBalancesTest extends TestCase
         });
 
         $this->assertTrue($paid);
-        $this->assertAmount('10.000000', Ledger::balance('2000', $this->customer()));
+        $this->assertAmount('10.000000000000', Ledger::balance('2000', $this->customer()));
     }
 
     public function test_lock_balance_needs_a_tracked_row(): void
@@ -133,8 +133,8 @@ class ReportsAndBalancesTest extends TestCase
         Ledger::post(new OrderDeliveredPosting);
 
         $this->assertSame(4, Balance::query()->count());
-        $this->assertAmount('17.000000', Ledger::balance('4000'));
-        $this->assertAmount('17.000000', Ledger::lockBalance('4000'));
+        $this->assertAmount('17.000000000000', Ledger::balance('4000'));
+        $this->assertAmount('17.000000000000', Ledger::lockBalance('4000'));
         $this->assertSame([], Ledger::verify());
     }
 
@@ -143,7 +143,7 @@ class ReportsAndBalancesTest extends TestCase
         Ledger::journal('opex')->key('opex:1')->debit('5401', 100)->credit('1020', 100)->post();
         Ledger::journal('opex')->key('opex:2')->debit('5402', 40)->credit('1020', 40)->post();
 
-        $this->assertAmount('140.000000', Ledger::balance('5400'));
+        $this->assertAmount('140.000000000000', Ledger::balance('5400'));
     }
 
     public function test_opening_balances_post_against_opening_equity(): void
@@ -153,10 +153,10 @@ class ReportsAndBalancesTest extends TestCase
         $again = Ledger::openingBalance('2000', 80, $this->customer(), '2026-01-01');
 
         $this->assertTrue($liability->is($again));
-        $this->assertAmount('300.000000', Ledger::balance('1100', $this->seller()));
-        $this->assertAmount('80.000000', Ledger::balance('2000', $this->customer()));
+        $this->assertAmount('300.000000000000', Ledger::balance('1100', $this->seller()));
+        $this->assertAmount('80.000000000000', Ledger::balance('2000', $this->customer()));
         // Opening equity takes the net: 300 of assets less 80 owed to customers.
-        $this->assertAmount('220.000000', Ledger::balance('3000'));
+        $this->assertAmount('220.000000000000', Ledger::balance('3000'));
         $this->assertSame('opening', $asset->origin->value);
     }
 
@@ -171,7 +171,7 @@ class ReportsAndBalancesTest extends TestCase
         ]), true);
 
         $this->assertTrue($json['tb']['balanced']);
-        $this->assertSame('-3.000000', $json['pl']['net_income']);
+        $this->assertSame('-3.000000000000', $json['pl']['net_income']);
         $this->assertTrue($json['bs']['balanced']);
     }
 }

@@ -41,7 +41,7 @@ return [
     | Base currency
     |--------------------------------------------------------------------------
     |
-    | Every line is stored in this currency at 6 decimal places. A journal
+    | Every line is stored in this currency as DECIMAL(30,12): 12 decimal places. A journal
     | may record the display currency and exchange rate it came from.
     |
     */

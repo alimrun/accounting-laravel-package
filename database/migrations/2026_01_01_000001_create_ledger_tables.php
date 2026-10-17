@@ -47,7 +47,7 @@ return new class extends Migration
             $table->char('period', 7)->index();
             $table->string('segment', 64)->nullable()->index();
             $table->char('currency', 3);
-            $table->decimal('exchange_rate', 24, 10)->default(1);
+            $table->decimal('exchange_rate', 30, 12)->default(1);
             $table->string('origin', 16)->default('live')->index();
             $table->string('description', 500)->nullable();
             $table->string('payment_method', 64)->nullable();
@@ -68,8 +68,8 @@ return new class extends Migration
             $table->foreignId('account_id')->constrained(Table::name('accounts'))->restrictOnDelete();
             $table->string('party_type', 191)->nullable();
             $table->string('party_id', 64)->nullable();
-            $table->decimal('debit', 24, 6)->default(0);
-            $table->decimal('credit', 24, 6)->default(0);
+            $table->decimal('debit', 30, 12)->default(0);
+            $table->decimal('credit', 30, 12)->default(0);
             $table->string('tag', 64)->nullable()->index();
             $table->string('segment', 64)->nullable();
             $table->string('reference_type', 191)->nullable();
@@ -102,8 +102,8 @@ return new class extends Migration
             $table->foreignId('account_id')->constrained(Table::name('accounts'))->restrictOnDelete();
             $table->string('party_type', 191)->default('');
             $table->string('party_id', 64)->default('');
-            $table->decimal('debit_total', 24, 6)->default(0);
-            $table->decimal('credit_total', 24, 6)->default(0);
+            $table->decimal('debit_total', 30, 12)->default(0);
+            $table->decimal('credit_total', 30, 12)->default(0);
             $table->unsignedBigInteger('last_entry_id')->nullable();
             $table->timestamp('updated_at')->nullable();
 
@@ -137,9 +137,9 @@ return new class extends Migration
             $table->string('accounts')->nullable();
             $table->string('party_type', 191)->nullable();
             $table->string('party_id', 64)->nullable();
-            $table->decimal('expected', 24, 6);
-            $table->decimal('actual', 24, 6);
-            $table->decimal('difference', 24, 6);
+            $table->decimal('expected', 30, 12);
+            $table->decimal('actual', 30, 12);
+            $table->decimal('difference', 30, 12);
             $table->json('meta')->nullable();
             $table->timestamp('detected_at');
             $table->timestamp('resolved_at')->nullable()->index();

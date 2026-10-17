@@ -47,7 +47,8 @@ $journal = Ledger::journal('invoice.issued')          // event name
 
 ### Amounts
 
-- Rounded half-up to 6 decimal places with exact arithmetic. `0.1 + 0.2` posts as `0.300000`.
+- Rounded half-up to 12 decimal places with exact arithmetic. `0.1 + 0.2` posts as `0.300000000000`;
+  a 13th digit rounds (`1.1234567890125` → `1.123456789013`).
 - `0` and `null` lines are **skipped**, so a rule can list every component
   (coupon, free delivery, referral) and only the non-zero ones are written.
 - Negative amounts throw `InvalidAmountException`. A negative debit is a credit,
@@ -66,7 +67,7 @@ $vendorShare = Amount::of($order->goods)
     ->plus($order->vendor_tax);
 
 Amount::sum([$a, $b, $c]);          // BigDecimal
-Amount::format('12.5');             // "12.500000"
+Amount::format('12.5');             // "12.500000000000"
 ```
 
 ### Conditional lines

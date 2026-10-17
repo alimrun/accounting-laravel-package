@@ -38,14 +38,14 @@ class PostingTest extends TestCase
         $this->assertSame('2026-10', $journal->period);
         $this->assertSame('retail', $journal->segment);
         $this->assertCount(4, $journal->entries, 'the zero free-delivery line is skipped');
-        $this->assertAmount('222.000000', $journal->totalDebit());
-        $this->assertAmount('222.000000', $journal->totalCredit());
+        $this->assertAmount('222.000000000000', $journal->totalDebit());
+        $this->assertAmount('222.000000000000', $journal->totalCredit());
 
-        $this->assertAmount('0.000000', Ledger::balance('2050', $this->customer()));
-        $this->assertAmount('205.000000', Ledger::balance('2100', $this->seller()));
-        $this->assertAmount('17.000000', Ledger::balance('4000'));
-        $this->assertAmount('20.000000', Ledger::balance('5000'));
-        $this->assertAmount('202.000000', Ledger::balance('1010'));
+        $this->assertAmount('0.000000000000', Ledger::balance('2050', $this->customer()));
+        $this->assertAmount('205.000000000000', Ledger::balance('2100', $this->seller()));
+        $this->assertAmount('17.000000000000', Ledger::balance('4000'));
+        $this->assertAmount('20.000000000000', Ledger::balance('5000'));
+        $this->assertAmount('202.000000000000', Ledger::balance('1010'));
         $this->assertSame([], Ledger::verify());
     }
 
@@ -54,8 +54,8 @@ class PostingTest extends TestCase
         $journal = Ledger::post(new OrderDeliveredPosting);
 
         $this->assertSame(['retail'], $journal->entries->pluck('segment')->unique()->values()->all());
-        $this->assertAmount('17.000000', Ledger::balance('4000', segment: 'retail'));
-        $this->assertAmount('0.000000', Ledger::balance('4000', segment: 'wholesale'));
+        $this->assertAmount('17.000000000000', Ledger::balance('4000', segment: 'retail'));
+        $this->assertAmount('0.000000000000', Ledger::balance('4000', segment: 'wholesale'));
     }
 
     public function test_an_unbalanced_journal_is_refused(): void
@@ -71,15 +71,15 @@ class PostingTest extends TestCase
     public function test_a_residual_within_tolerance_goes_to_the_rounding_account(): void
     {
         $journal = Ledger::journal('fx.sale')->key('fx:1')
-            ->debit('1000', '100.000004')
-            ->credit('4010', '100.000000')
+            ->debit('1000', '100.000004000000')
+            ->credit('4010', '100.000000000000')
             ->post();
 
         $rounding = $journal->entries->firstWhere('tag', 'rounding');
 
         $this->assertNotNull($rounding);
         $this->assertSame('5910', $rounding->account->code);
-        $this->assertAmount('0.000004', $rounding->credit);
+        $this->assertAmount('0.000004000000', $rounding->credit);
     }
 
     public function test_floats_are_rounded_to_six_places_and_balance_exactly(): void
@@ -89,8 +89,26 @@ class PostingTest extends TestCase
             ->credit('4010', 0.3)
             ->post();
 
-        $this->assertAmount('0.300000', $journal->entries[0]->debit);
+        $this->assertAmount('0.300000000000', $journal->entries[0]->debit);
         $this->assertCount(2, $journal->entries);
+    }
+
+    public function test_amounts_keep_twelve_decimal_places(): void
+    {
+        $journal = Ledger::journal('precise.sale')->key('precise:1')
+            ->debit('2000', '1.123456789012', party: $this->customer())
+            ->debit('2000', '0.000000000001', party: $this->customer())
+            ->credit('4010', '1.1234567890125')          // 13th digit rounds half-up
+            ->post()
+            ->fresh('entries');
+
+        $this->assertAmount('1.123456789012', $journal->entries[0]->debit);
+        $this->assertAmount('0.000000000001', $journal->entries[1]->debit);
+        $this->assertAmount('1.123456789013', $journal->entries[2]->credit);
+        $this->assertCount(3, $journal->entries, 'balanced exactly, no rounding line');
+        $this->assertAmount('-1.123456789013', Ledger::balance('2000', $this->customer()));
+        $this->assertAmount('1.123456789013', Ledger::balance('4010'));
+        $this->assertSame([], Ledger::verify());
     }
 
     public function test_negative_amounts_are_refused(): void
@@ -158,7 +176,7 @@ class PostingTest extends TestCase
 
         $this->assertTrue($first->is($second));
         $this->assertSame(1, Journal::query()->count());
-        $this->assertAmount('205.000000', Ledger::balance('2100', $this->seller()));
+        $this->assertAmount('205.000000000000', Ledger::balance('2100', $this->seller()));
     }
 
     public function test_reusing_a_key_for_different_money_throws(): void
@@ -194,7 +212,7 @@ class PostingTest extends TestCase
 
         $this->assertSame(0, Journal::query()->count());
         $this->assertSame(0, Entry::query()->count());
-        $this->assertAmount('0.000000', Ledger::balance('2100', $this->seller()));
+        $this->assertAmount('0.000000000000', Ledger::balance('2100', $this->seller()));
 
         // The sequence rolled back too, so numbering stays gapless.
         $this->assertSame('JV-2026-00000001', Ledger::post(new OrderDeliveredPosting)->number);
@@ -246,7 +264,7 @@ class PostingTest extends TestCase
             ->post();
 
         $this->assertCount(3, $journal->entries);
-        $this->assertAmount('105.000000', Ledger::balance('2000', $this->customer()));
+        $this->assertAmount('105.000000000000', Ledger::balance('2000', $this->customer()));
     }
 
     public function test_currency_and_metadata_are_kept_on_the_journal(): void
@@ -261,7 +279,7 @@ class PostingTest extends TestCase
             ->fresh();
 
         $this->assertSame('BDT', $journal->currency);
-        $this->assertSame('0.0085000000', $journal->exchange_rate);
+        $this->assertSame('0.008500000000', $journal->exchange_rate);
         $this->assertSame(['till' => 3], $journal->meta);
         $this->assertSame('TX-1', $journal->transaction_ref);
     }

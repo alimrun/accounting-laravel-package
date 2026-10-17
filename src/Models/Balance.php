@@ -31,8 +31,8 @@ class Balance extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'debit_total' => 'decimal:6',
-        'credit_total' => 'decimal:6',
+        'debit_total' => 'decimal:12',
+        'credit_total' => 'decimal:12',
     ];
 
     public function account(): BelongsTo

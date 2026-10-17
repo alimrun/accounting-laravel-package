@@ -5,13 +5,13 @@ application (orders, refunds, wallets, payouts, cash collection, expenses,
 salaries) is posted as one balanced, append-only journal. Wallets, statements,
 profit and loss and the balance sheet are then read from the same books.
 
-- **Double entry**: every journal has two or more lines and debits equal credits to 6 decimal places. Anything else is refused.
+- **Double entry**: every journal has two or more lines and debits equal credits to 12 decimal places. Anything else is refused.
 - **Append-only**: journals and entries are never edited or deleted. A correction is a reversing journal plus a new one. Optional database triggers block raw `UPDATE`/`DELETE` too.
 - **Idempotent**: each journal carries a unique key such as `order:100245:delivered`. A replayed callback gets the existing journal back, and reusing a key for different money throws.
 - **Atomic with your business change**: post inside your status-change transaction. If the posting is refused, the status change rolls back with it.
 - **Control accounts and sub-ledgers**: one account per concept (`Payable to vendors`), with the vendor, customer or employee stored as the *party* on each line.
 - **Dimensions on every line**: segment (business unit, module, branch), tag, reference, free-form dimensions.
-- **Exact arithmetic**: `DECIMAL(24,6)` in one base currency, computed with `brick/math`. A residual up to 0.000010 goes to the rounding account; a larger one throws.
+- **Exact arithmetic**: `DECIMAL(30,12)` (12 decimal places) in one base currency, computed with `brick/math`. A residual up to 0.000010 goes to the rounding account; a larger one throws.
 - **Locked running balances** per party, taken in sorted order to avoid deadlocks, plus `lockBalance()` for wallet payments and limit checks.
 - **Periods**: monthly close into retained earnings, refusal of postings into closed months, reopen.
 - **Reports**: trial balance, income statement, balance sheet, account and party statements, sub-ledger listings, all by segment.
@@ -122,7 +122,7 @@ Ledger::journal('order.delivered')
 
 `post()` returns the `Journal` with its `entries`, numbered `JV-2026-00000001`.
 
-Amounts can be strings, ints, floats or `BigDecimal`. They are rounded half-up to 6 places. Negative amounts are refused: post them on the other side.
+Amounts can be strings, ints, floats or `BigDecimal`. They are rounded half-up to 12 decimal places. Negative amounts are refused: post them on the other side.
 
 ### Posting rules
 
@@ -309,7 +309,7 @@ Ledger::statement(['2100', '1100'], $seller, side: 'credit');                   
 Ledger::partyBalances('2100');                                                  // every vendor's payable
 ```
 
-Every report implements `Arrayable` and `JsonSerializable`, so you can return it from a controller. Amounts are strings with 6 decimals.
+Every report implements `Arrayable` and `JsonSerializable`, so you can return it from a controller. Amounts are strings with 12 decimals.
 
 ---
 

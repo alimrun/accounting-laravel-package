@@ -1,6 +1,6 @@
 # Balances and reports
 
-All amounts come back as `Brick\Math\BigDecimal` (balances) or as strings with 6
+All amounts come back as `Brick\Math\BigDecimal` (balances) or as strings with 12
 decimals (reports). Compare with `isLessThan()`, `isZero()`, `isGreaterThan()` and so on, and
 cast with `(string)` to display. Don't convert to float.
 

@@ -28,9 +28,9 @@ class ReconciliationIssue extends Model
     protected $guarded = ['id'];
 
     protected $casts = [
-        'expected' => 'decimal:6',
-        'actual' => 'decimal:6',
-        'difference' => 'decimal:6',
+        'expected' => 'decimal:12',
+        'actual' => 'decimal:12',
+        'difference' => 'decimal:12',
         'meta' => 'array',
         'detected_at' => 'datetime',
         'resolved_at' => 'datetime',

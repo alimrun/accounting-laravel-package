@@ -9,7 +9,7 @@
 | `database.table_prefix` | | `ledger_` | Prefix for all seven tables. Set it before migrating. |
 | `database.run_migrations` | | `true` | Load the package migrations automatically. Turn off if you publish them. |
 | `database.immutable_triggers` | `LEDGER_IMMUTABLE_TRIGGERS` | `false` | Create DB triggers that refuse UPDATE and DELETE on journals and entries. Set it before migrating. |
-| `currency` | `LEDGER_CURRENCY` | `USD` | Base currency of every amount. Stored on each journal unless overridden. |
+| `currency` | `LEDGER_CURRENCY` | `USD` | Base currency of every amount. Stored on each journal unless overridden. Amounts are always `DECIMAL(30,12)`. |
 | `rounding.tolerance` | | `0.000010` | Largest imbalance absorbed by the `rounding` account; also the reconciliation tolerance. |
 | `accounts.rounding` | | `null` | Code to use instead of the account with the `rounding` role. |
 | `accounts.opening_balance_equity` | | `null` | Same for opening balances. |

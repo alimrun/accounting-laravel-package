@@ -54,7 +54,7 @@ class Journal extends Model
     protected $casts = [
         'occurred_at' => 'datetime',
         'origin' => JournalOrigin::class,
-        'exchange_rate' => 'decimal:10',
+        'exchange_rate' => 'decimal:12',
         'meta' => 'array',
     ];
 

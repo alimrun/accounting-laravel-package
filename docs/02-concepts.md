@@ -124,7 +124,7 @@ dated in that month. See [Periods](08-periods.md).
 ## Base currency
 
 Every amount is stored in one base currency (`LEDGER_CURRENCY`, default USD) as
-`DECIMAL(24,6)`. A journal can record the currency the customer saw and the
+`DECIMAL(30,12)`: 12 decimal places, 18 integer digits. A journal can record the currency the customer saw and the
 exchange rate, but the lines are always converted to the base currency *before*
 posting. Convert once, in your code, using the rate you stored on the order;
 never inside a posting rule from a live rate.

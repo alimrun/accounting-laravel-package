@@ -27,9 +27,9 @@ class PeriodTest extends TestCase
 
         $this->assertSame(JournalOrigin::Closing, $closing->origin);
         $this->assertSame('2026-09', $closing->period);
-        $this->assertAmount('0.000000', Ledger::balance('4010'));
-        $this->assertAmount('0.000000', Ledger::balance('5401'));
-        $this->assertAmount('200.000000', Ledger::balance('3100'));
+        $this->assertAmount('0.000000000000', Ledger::balance('4010'));
+        $this->assertAmount('0.000000000000', Ledger::balance('5401'));
+        $this->assertAmount('200.000000000000', Ledger::balance('3100'));
         $this->assertTrue(Ledger::periods()->isClosed('2026-09'));
         $this->assertSame([], Ledger::verify());
     }
@@ -52,9 +52,9 @@ class PeriodTest extends TestCase
 
         $pl = Ledger::incomeStatement('2026-09-01', '2026-09-30 23:59:59');
 
-        $this->assertAmount('500.000000', $pl->totalRevenue);
-        $this->assertAmount('300.000000', $pl->totalExpenses);
-        $this->assertAmount('200.000000', $pl->netIncome);
+        $this->assertAmount('500.000000000000', $pl->totalRevenue);
+        $this->assertAmount('300.000000000000', $pl->totalExpenses);
+        $this->assertAmount('200.000000000000', $pl->netIncome);
         $this->assertSame('5400', $pl->expenses[0]['parent_code']);
     }
 
@@ -65,14 +65,14 @@ class PeriodTest extends TestCase
 
         $before = Ledger::balanceSheet();
         $this->assertTrue($before->isBalanced());
-        $this->assertAmount('200.000000', $before->currentEarnings);
+        $this->assertAmount('200.000000000000', $before->currentEarnings);
 
         Ledger::closePeriod('2026-09');
 
         $after = Ledger::balanceSheet();
         $this->assertTrue($after->isBalanced());
-        $this->assertAmount('0.000000', $after->currentEarnings);
-        $this->assertAmount('1200.000000', $after->totalAssets);
+        $this->assertAmount('0.000000000000', $after->currentEarnings);
+        $this->assertAmount('1200.000000000000', $after->totalAssets);
     }
 
     public function test_reopening_reverses_the_close_and_allows_postings_again(): void
@@ -82,14 +82,14 @@ class PeriodTest extends TestCase
         Ledger::reopenPeriod('2026-09');
 
         $this->assertFalse(Ledger::periods()->isClosed('2026-09'));
-        $this->assertAmount('500.000000', Ledger::balance('4010'));
-        $this->assertAmount('0.000000', Ledger::balance('3100'));
+        $this->assertAmount('500.000000000000', Ledger::balance('4010'));
+        $this->assertAmount('0.000000000000', Ledger::balance('3100'));
 
         Ledger::journal('cash.sale')->key('sale:late')->occurredAt('2026-09-30')
             ->debit('1000', 50)->credit('4010', 50)->post();
 
         Ledger::closePeriod('2026-09');
-        $this->assertAmount('250.000000', Ledger::balance('3100'));
+        $this->assertAmount('250.000000000000', Ledger::balance('3100'));
         $this->assertSame([], Ledger::verify());
     }
 

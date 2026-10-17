@@ -25,6 +25,10 @@ Turn the triggers on in tests too, so a raw `UPDATE` in your code fails loudly:
 <env name="LEDGER_IMMUTABLE_TRIGGERS" value="true"/>
 ```
 
+Amounts read back from the models are 12-decimal strings (`'202.000000000000'`).
+On SQLite, keep test amounts to about 15 significant digits; see
+[Database and performance](12-database-and-performance.md).
+
 ## Golden-number tests: one per posting rule
 
 Fixed inputs and exact expected lines. This test documents the accounting and catches
@@ -41,10 +45,10 @@ public function test_prepaid_order_delivered_posts_the_agreed_lines(): void
     $journal = Ledger::post(new OrderDeliveredPosting($order));
 
     $this->assertSame([
-        ['2050', '202.000000', '0.000000'],
-        ['5000', '20.000000', '0.000000'],
-        ['2100', '0.000000', '205.000000'],
-        ['4000', '0.000000', '17.000000'],
+        ['2050', '202.000000000000', '0.000000000000'],
+        ['5000', '20.000000000000', '0.000000000000'],
+        ['2100', '0.000000000000', '205.000000000000'],
+        ['4000', '0.000000000000', '17.000000000000'],
     ], $journal->entries->map(fn ($e) => [$e->account->code, $e->debit, $e->credit])->all());
 }
 ```
@@ -58,7 +62,7 @@ public function test_a_replayed_gateway_callback_posts_once(): void
     $this->post('/payment/callback', $payload)->assertOk();
 
     $this->assertSame(1, Journal::query()->forEvent('order.paid')->count());
-    $this->assertEquals('202.000000', (string) Ledger::balance('2050', $customer));
+    $this->assertEquals('202.000000000000', (string) Ledger::balance('2050', $customer));
 }
 
 public function test_delivering_twice_settles_once(): void
@@ -90,8 +94,8 @@ and then check every party's balance and the trial balance:
 
 ```php
 $this->assertTrue(Ledger::trialBalance()->isBalanced());
-$this->assertEquals('0.000000', (string) Ledger::balance('2050'));   // no prepayments left
-$this->assertEquals('188.000000', (string) Ledger::balance('2100', $seller));
+$this->assertEquals('0.000000000000', (string) Ledger::balance('2050'));   // no prepayments left
+$this->assertEquals('188.000000000000', (string) Ledger::balance('2100', $seller));
 ```
 
 ## Faking events

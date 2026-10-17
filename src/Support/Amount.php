@@ -13,7 +13,7 @@ use Brick\Math\RoundingMode;
  */
 final class Amount
 {
-    public const SCALE = 6;
+    public const SCALE = 12;
 
     public static function of(BigNumber|int|float|string|null $value): BigDecimal
     {
