@@ -215,7 +215,7 @@ $withdrawable = Ledger::balance([Accounts::VENDOR_PAYABLE, Accounts::CASH_HELD_B
 | Receivable from a customer | `Ledger::balance('1200', $customer)` |
 | All payables, per supplier | `Ledger::partyBalances('2000')` |
 | A party's statement | `Ledger::statement('2100', $seller, from: ..., to: ...)` |
-| Revenue this month, wholesale | `Ledger::balance('4000', asOf: now(), segment: 'wholesale')` minus last month, or `incomeStatement(...)` |
+| Revenue this month, wholesale | `Ledger::incomeStatement(now()->startOfMonth(), now(), 'wholesale')->totalRevenue` |
 | P&L | `Ledger::incomeStatement($from, $to, $segment)` |
 
 If mobile apps or old screens read wallet columns directly, keep the columns and

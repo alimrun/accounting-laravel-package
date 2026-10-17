@@ -48,6 +48,10 @@ class LedgerServiceProvider extends ServiceProvider
                 __DIR__.'/../resources/charts' => base_path('ledger/charts'),
             ], 'ledger-charts');
 
+            $this->publishes([
+                __DIR__.'/../stubs/CLAUDE.ledger.md' => base_path('.claude/ledger.md'),
+            ], 'ledger-claude');
+
             $this->commands([
                 Console\InstallCommand::class,
                 Console\SeedChartCommand::class,

@@ -20,6 +20,15 @@ profit and loss and the balance sheet are then read from the same books.
 
 Requires PHP 8.2+ and Laravel 11, 12 or 13. Tested on SQLite; designed for MySQL 8 and PostgreSQL.
 
+**Documentation:** [docs/](docs/README.md): installation, concepts, chart of accounts,
+posting, a step-by-step [integration guide](docs/05-integration-guide.md),
+[recipes](docs/06-recipes.md), reports, periods, migration, API, configuration,
+performance, testing and troubleshooting.
+
+**Using Claude Code in a project that uses this package?** Run
+`php artisan vendor:publish --tag=ledger-claude` and add `@.claude/ledger.md` to that
+project's `CLAUDE.md`, so the integration rules load automatically.
+
 ---
 
 ## Installation
